@@ -9,6 +9,6 @@
 
 * Task 4: Wednesday - Nov 15
 
-* Task 5: Sunday - Nov 26
+* Task 5: Sunday - Nov 18
 
-* Final Due-Date: November 21, 2021
+* Final Due-Date: Tuesday - Nov 21
