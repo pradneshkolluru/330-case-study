@@ -31,7 +31,7 @@ class NotUber:
         if not self.available_drivers or not self.unmatched_passengers:
             return None
 
-        driver = heapq.heappop(self.available_drivers)
+        driver = self.available_drivers.pop(0)
         passenger = self.unmatched_passengers.pop(0)
 
         travel_time = find_time(driver.loc, passenger.sloc)
@@ -87,3 +87,7 @@ if __name__ == "__main__":
     test.add_driver(driver("john", 40.88, -77.42))
 
     print(test.match())
+
+
+    print("Test Distance Function")
+    print(distance((52.2296756, 21.0122287), (52.406374, 16.9251681)))
