@@ -1,4 +1,21 @@
 import heapq
+import geopy.distance
+
+
+class driver:
+    def __init__(self, name, lat, long):
+        
+        self.name = name
+        self.loc = (lat, long)
+
+class passenger:
+    def __init__(self, name, slat, slong, dlat = 0, dlong = 0):
+        
+        self.name = name
+        self.sloc = (slat, slong)
+        self.dloc = (dlat, dlong)
+
+
 
 class NotUber:
     def __init__(self):
@@ -18,21 +35,39 @@ class NotUber:
         driver = heapq.heappop(self.available_drivers)
         passenger = self.unmatched_passengers.pop(0)
 
-        travel_time = find_time(driver.location, passenger.pickup_location)
-        driver.location = passenger.dropoff_location
+        travel_time = find_time(driver.loc, passenger.sloc)
+        #driver.location = passenger.dropoff_location
 
         return {
-            'driver_id': driver.id,
-            'passenger_id': passenger.id,
+            'driver_id': driver.name,
+            'passenger_id': passenger.name,
             'travel_time': travel_time
         }
+
 
 def find_time(start_location, end_location):
     return distance(start_location, end_location)
 
 def distance(location1, location2):
-    return 1
+
+    return geopy.distance.geodesic(location1, location2).mi
 
 
-result = NotUber().match()
-print(result)
+
+if __name__ == "__main__":
+
+    test = NotUber()
+
+    test.add_driver(driver("billy", 40.66, -77.39))
+
+    test.add_passenger(passenger("Sam", 40.68, -77.38))
+
+    #print(test.match())
+
+    test.add_passenger(passenger("Tom", 40.66, -77.40))
+
+    #print(test.match())
+
+    test.add_driver(driver("john", 40.88, -77.42))
+
+    #print(test.match())
