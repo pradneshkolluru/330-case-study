@@ -1,5 +1,4 @@
 import heapq
-import geopy.distance
 
 
 class driver:
@@ -23,7 +22,7 @@ class NotUber:
         self.unmatched_passengers = []
 
     def add_driver(self, driver):
-        heapq.heappush(self.available_drivers, driver)
+        self.available_drivers.append(driver)
 
     def add_passenger(self, passenger):
         self.unmatched_passengers.append(passenger)
@@ -79,12 +78,12 @@ if __name__ == "__main__":
 
     test.add_passenger(passenger("Sam", 40.68, -77.38))
 
-    #print(test.match())
+    print(test.match())
 
     test.add_passenger(passenger("Tom", 40.66, -77.40))
 
-    #print(test.match())
+    print(test.match())
 
     test.add_driver(driver("john", 40.88, -77.42))
 
-    #print(test.match())
+    print(test.match())
