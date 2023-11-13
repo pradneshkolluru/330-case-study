@@ -3,19 +3,20 @@ import datetime
 
 
 class driver:
-    def __init__(self, name, lat, long):
+    def __init__(self, name, lat, long, time_available = 0):
         
         self.name = name
         self.loc = (lat, long)
+        self.time_available = 0
     
     def __eq__(self, other):
-        if isinstance(other, self):
-            return self.value == other.value
+        if isinstance(other, type(self)):
+            return self.time_available == other.time_available
         return False
 
     def __lt__(self, other):
-        if isinstance(other, self):
-            return self.value < other.value
+        if isinstance(other, type(self)):
+            return self.time_available < other.time_available
         return NotImplemented  # Indicates that the comparison is not implemented for the given types
 
 class passenger:
@@ -27,13 +28,13 @@ class passenger:
         self.startTime = datetime.datetime.strptime(startTime, "%m/%d/%Y %H:%M:%S")
     
     def __eq__(self, other):
-        if isinstance(other, self):
-            return self.value == other.value
+        if isinstance(other, type(self)):
+            return self.startTime == other.startTime
         return False
 
     def __lt__(self, other):
-        if isinstance(other, self):
-            return self.value < other.value
+        if isinstance(other, type(self)):
+            return self.startTime < other.startTime
         return NotImplemented  # Indicates that the comparison is not implemented for the given types
 
 
@@ -43,18 +44,20 @@ class NotUber:
         self.available_drivers = []
         self.unmatched_passengers = []
 
-    def add_driver(self, driver):
-        self.available_drivers.append(driver)
+    def add_new_driver(self, driver):
+
+        driver.time_available = datetime.datetime.now()
+        heapq.heappush(self.available_drivers, driver)
 
     def add_passenger(self, passenger):
-        self.unmatched_passengers.append(passenger)
+        heapq.heappush(self.unmatched_passengers, passenger)
 
     def match(self):
         if not self.available_drivers or not self.unmatched_passengers:
             return None
 
-        driver = self.available_drivers.pop(0)
-        passenger = self.unmatched_passengers.pop(0)
+        driver = heapq.heappop(self.available_drivers)
+        passenger = heapq.heappop(self.unmatched_passengers)
 
         travel_time = find_time(driver.loc, passenger.sloc)
         #driver.location = passenger.dropoff_location
@@ -96,19 +99,29 @@ if __name__ == "__main__":
 
     test = NotUber()
 
-    test.add_driver(driver("billy", 40.66, -77.39))
+    test.add_new_driver(driver("billy", 40.66, -77.39))
+    test.add_new_driver(driver("Nob", 40.66, -77.39))
 
     test.add_passenger(passenger("Sam","04/25/2014 00:00:00", 40.68, -77.38))
 
-    print(test.match())
+    print(test.match()) #Match
+
+
+    test.add_passenger(passenger("Taylor","04/26/2014 00:00:00", 40.66, -77.40))
+
+    print(test.match()) #Match
 
     test.add_passenger(passenger("Tom","04/25/2014 00:00:00", 40.66, -77.40))
 
-    print(test.match())
+    print(test.match()) #None
 
-    test.add_driver(driver("john", 40.88, -77.42))
+    test.add_passenger(passenger("Emma Stone","04/25/2011 00:00:00", 40.66, -77.40))
 
-    print(test.match())
+    print(test.match()) #None
+
+    test.add_new_driver(driver("john", 40.88, -77.42))
+
+    print(test.match()) #Match John to Emma
 
 
     print("Test Distance Function")
