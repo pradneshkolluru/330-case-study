@@ -1,4 +1,5 @@
 import heapq
+import datetime
 
 
 class driver:
@@ -8,11 +9,12 @@ class driver:
         self.loc = (lat, long)
 
 class passenger:
-    def __init__(self, name, slat, slong, dlat = 0, dlong = 0):
+    def __init__(self, name, startTime, slat, slong, dlat = 0, dlong = 0):
         
         self.name = name
         self.sloc = (slat, slong)
         self.dloc = (dlat, dlong)
+        self.startTime = datetime.datetime.strptime(startTime, "%m/%d/%Y %H:%M:%S")
 
 
 
@@ -76,11 +78,11 @@ if __name__ == "__main__":
 
     test.add_driver(driver("billy", 40.66, -77.39))
 
-    test.add_passenger(passenger("Sam", 40.68, -77.38))
+    test.add_passenger(passenger("Sam","04/25/2014 00:00:00", 40.68, -77.38))
 
     print(test.match())
 
-    test.add_passenger(passenger("Tom", 40.66, -77.40))
+    test.add_passenger(passenger("Tom","04/25/2014 00:00:00", 40.66, -77.40))
 
     print(test.match())
 
