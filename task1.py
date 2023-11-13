@@ -7,6 +7,16 @@ class driver:
         
         self.name = name
         self.loc = (lat, long)
+    
+    def __eq__(self, other):
+        if isinstance(other, self):
+            return self.value == other.value
+        return False
+
+    def __lt__(self, other):
+        if isinstance(other, self):
+            return self.value < other.value
+        return NotImplemented  # Indicates that the comparison is not implemented for the given types
 
 class passenger:
     def __init__(self, name, startTime, slat, slong, dlat = 0, dlong = 0):
@@ -15,6 +25,16 @@ class passenger:
         self.sloc = (slat, slong)
         self.dloc = (dlat, dlong)
         self.startTime = datetime.datetime.strptime(startTime, "%m/%d/%Y %H:%M:%S")
+    
+    def __eq__(self, other):
+        if isinstance(other, self):
+            return self.value == other.value
+        return False
+
+    def __lt__(self, other):
+        if isinstance(other, self):
+            return self.value < other.value
+        return NotImplemented  # Indicates that the comparison is not implemented for the given types
 
 
 
