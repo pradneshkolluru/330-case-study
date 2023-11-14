@@ -27,6 +27,9 @@ class passenger:
         self.dloc = (dlat, dlong)
         self.startTime = datetime.datetime.strptime(startTime, "%m/%d/%Y %H:%M:%S")
     
+    def __str__(self):
+        return self.name
+    
     def __eq__(self, other):
         if isinstance(other, type(self)):
             return self.startTime == other.startTime
@@ -53,19 +56,18 @@ class NotUber:
         heapq.heappush(self.unmatched_passengers, passenger)
 
     def match(self):
+
         if not self.available_drivers or not self.unmatched_passengers:
             return None
 
         driver = heapq.heappop(self.available_drivers)
         passenger = heapq.heappop(self.unmatched_passengers)
-
-        travel_time = find_time(driver.loc, passenger.sloc)
-        #driver.location = passenger.dropoff_location
+        dist = distance(driver.loc, passenger.sloc)
 
         return {
             'driver_id': driver.name,
             'passenger_id': passenger.name,
-            'travel_time': travel_time
+            'travel_time': dist,
         }
 
 
@@ -111,18 +113,19 @@ if __name__ == "__main__":
 
     print(test.match()) #Match
 
-    test.add_passenger(passenger("Tom","04/25/2014 00:00:00", 40.66, -77.40))
+    test.add_passenger(passenger("Tom","04/25/2014 00:00:00", 40.66, -77.430))
 
     print(test.match()) #None
 
-    test.add_passenger(passenger("Emma Stone","04/25/2011 00:00:00", 40.66, -77.40))
+    test.add_passenger(passenger("Emma Stone","04/25/2014 00:00:00", 40.88, -77.42))
+
+    print(test.match()) #None
+
+    test.add_passenger(passenger("Dom","04/25/2014 00:00:00", 40.66, -79.40))
 
     print(test.match()) #None
 
     test.add_new_driver(driver("john", 40.88, -77.42))
 
+
     print(test.match()) #Match John to Emma
-
-
-    print("Test Distance Function")
-    print(distance((52.2296756, 21.0122287), (52.406374, 16.9251681)))
