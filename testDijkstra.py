@@ -13,6 +13,9 @@ class path:
         self.weekendSpeeds = weekend #list
 
 
+
+
+
 with open('data/edges.csv', newline='') as csvfile:
 
         edgeReader = csv.reader(csvfile, delimiter=',', )
