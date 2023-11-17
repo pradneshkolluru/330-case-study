@@ -66,6 +66,10 @@ def genAdj():
 
 
 def dijkstra(graph, start, end, timeStamp):
+
+    start = int(start)
+    end = int(end)
+    
     #start by setting everything to infinity like usual
     distances = {node: float('infinity') for node in graph}
     distances[start] = 0 # starting node distance to itself is 0
@@ -134,8 +138,6 @@ def main():
     shortest_distance = dijkstra(adjacency, 1, 3, datetime.datetime.strptime("11/20/2023 00:44:00", "%m/%d/%Y %H:%M:%S"))
 
     print(shortest_distance)
-
-    print(getTimeTraversal(datetime.datetime.strptime("11/20/2023 13:44:00", "%m/%d/%Y %H:%M:%S")))
 
 
 if __name__ == "__main__":
