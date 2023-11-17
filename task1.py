@@ -198,5 +198,4 @@ if __name__ == "__main__":
 
     test.add_new_driver(driver("john", 40.88, -77.42, "04/25/2014 00:00:00"))
 
-
     print(test.match2()) #Match John to Emma
