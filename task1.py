@@ -7,7 +7,7 @@ class driver:
         
         self.name = name
         self.loc = (lat, long)
-        self.time_available = 0
+        self.time_available = datetime.datetime.strptime(time_available, "%m/%d/%Y %H:%M:%S")
     
     def __eq__(self, other):
         if isinstance(other, type(self)):
@@ -63,6 +63,61 @@ class NotUber:
         driver = heapq.heappop(self.available_drivers)
         passenger = heapq.heappop(self.unmatched_passengers)
         dist = distance(driver.loc, passenger.sloc)
+
+        return {
+            'driver_id': driver.name,
+            'passenger_id': passenger.name,
+            'travel_time': dist,
+        }
+    
+    def match2(self, verbose = False):
+
+        if not self.available_drivers or not self.unmatched_passengers:
+            return None
+
+        driver = heapq.heappop(self.available_drivers)
+        passenger = heapq.heappop(self.unmatched_passengers)
+
+        early = passenger.startTime
+        dist = distance(driver.loc, passenger.sloc)
+
+
+        cache = []
+
+        while len(self.unmatched_passengers) > 0:
+
+            temp = heapq.heappop(self.unmatched_passengers)
+
+            if temp.startTime == early:
+
+                temp_dist = distance(driver.loc, temp.sloc)
+                
+                print("Request Time Match")
+                if verbose:
+                    print("Request Match")
+                    print((passenger.name, temp.name))
+                    print((dist, temp_dist))
+
+                if  temp_dist < dist:
+
+                    cache.append(passenger)
+
+                    passenger = temp
+                    dist = temp_dist
+                
+                else:
+
+                    cache.append(temp)
+            else:
+
+                heapq.heappush(self.unmatched_passengers, temp)
+                break
+
+        
+        for i in cache:
+
+            heapq.heappush(self.unmatched_passengers, i)
+
 
         return {
             'driver_id': driver.name,
