@@ -3,7 +3,7 @@ import datetime
 
 
 class driver:
-    def __init__(self, name, lat, long, time_available = 0):
+    def __init__(self, name, lat, long, time_available):
         
         self.name = name
         self.loc = (lat, long)
@@ -18,6 +18,7 @@ class driver:
         if isinstance(other, type(self)):
             return self.time_available < other.time_available
         return NotImplemented  # Indicates that the comparison is not implemented for the given types
+
 
 class passenger:
     def __init__(self, name, startTime, slat, slong, dlat = 0, dlong = 0):
@@ -49,7 +50,6 @@ class NotUber:
 
     def add_new_driver(self, driver):
 
-        driver.time_available = datetime.datetime.now()
         heapq.heappush(self.available_drivers, driver)
 
     def add_passenger(self, passenger):
@@ -71,114 +71,75 @@ class NotUber:
             'passenger_obj': passenger,
             'distance_travel': dist}
     
+    @staticmethod
+    def isAvailable(driver, passenger):
+
+        print(driver.time_available <= passenger.startTime)
+
+        return driver.time_available <= passenger.startTime
+    
+    
     def match2(self, verbose = False):
 
         if not self.available_drivers or not self.unmatched_passengers:
             return None
 
-        driver = heapq.heappop(self.available_drivers)
-        passenger = heapq.heappop(self.unmatched_passengers)
-
-        early = passenger.startTime
-        dist = distance(driver.loc, passenger.sloc)
-
-
-        cache = []
-
-        while len(self.unmatched_passengers) > 0:
-
-            temp = heapq.heappop(self.unmatched_passengers)
-
-            if temp.startTime == early:
-
-                temp_dist = distance(driver.loc, temp.sloc)
-                
-                print("Request Time Match")
-                if verbose:
-                    print("Request Match")
-                    print((passenger.name, temp.name))
-                    print((dist, temp_dist))
-
-                if  temp_dist < dist:
-
-                    cache.append(passenger)
-
-                    passenger = temp
-                    dist = temp_dist
-                
-                else:
-
-                    cache.append(temp)
-            else:
-
-                heapq.heappush(self.unmatched_passengers, temp)
-                break
-
-        
-        for i in cache:
-
-            heapq.heappush(self.unmatched_passengers, i)
-
-
-        return {
-            'driver_id': driver.name,
-            'passenger_id': passenger.name,
-            'travel_time': dist,
-        }
     
-    def match3(self, verbose = False):
-
-        if not self.available_drivers or not self.unmatched_passengers:
-            return None
-
-        driver = heapq.heappop(self.available_drivers)
         passenger = heapq.heappop(self.unmatched_passengers)
+        tempDriverAloc = heapq.heappop(self.available_drivers)
 
-        early = passenger.startTime
+        if not NotUber.isAvailable(tempDriverAloc, passenger):
 
+            print("First Element")
+            return {
+            'driver_id': tempDriverAloc.name,
+            'driver_obj' : tempDriverAloc,
+            'passenger_id': passenger.name,
+            'passenger_obj': passenger}
+        
 
-        cache = []
+        minEucDist = distance(tempDriverAloc.loc, passenger.sloc)
 
-        while len(self.unmatched_passengers) > 0:
+        driverCache = []
 
-            temp = heapq.heappop(self.unmatched_passengers)
+        
+        while len(self.available_drivers) > 0:
 
-            if temp.startTime == early:
+            temp = heapq.heappop(self.available_drivers)
 
-                temp_dist = distance(driver.loc, temp.sloc)
-                
-                print("Request Time Match")
-                if verbose:
-                    print("Request Match")
-                    print((passenger.name, temp.name))
-                    print((dist, temp_dist))
+            if NotUber.isAvailable(temp, passenger):
 
-                if  temp_dist < dist:
+                temp_dist = distance(temp.loc, passenger.sloc)
+        
 
-                    cache.append(passenger)
+                if  temp_dist < minEucDist:
 
-                    passenger = temp
-                    dist = temp_dist
+                    driverCache.append(tempDriverAloc)
+
+                    tempDriverAloc = temp
+                    minEucDist = temp_dist
                 
                 else:
 
-                    cache.append(temp)
+                    driverCache.append(temp)
+
             else:
 
-                heapq.heappush(self.unmatched_passengers, temp)
+                heapq.heappush(self.available_drivers, temp)
                 break
 
         
-        for i in cache:
+        for i in driverCache:
 
-            heapq.heappush(self.unmatched_passengers, i)
+            heapq.heappush(self.available_drivers, i)
 
 
         return {
-            'driver_id': driver.name,
+            'driver_id': tempDriverAloc.name,
+            'driver_obj' : tempDriverAloc,
             'passenger_id': passenger.name,
-            'travel_time': dist,
-        }
+            'passenger_obj': passenger}
+    
 
 
 def find_time(start_location, end_location):
@@ -211,31 +172,31 @@ if __name__ == "__main__":
 
     test = NotUber()
 
-    test.add_new_driver(driver("billy", 40.66, -77.39))
-    test.add_new_driver(driver("Nob", 40.66, -77.39))
+    test.add_new_driver(driver("billy", 40.66, -77.39, "04/20/2014 00:00:00"))
+    test.add_new_driver(driver("Nob", 40.68, -77.38, "04/21/2014 00:00:00"))
 
     test.add_passenger(passenger("Sam","04/25/2014 00:00:00", 40.68, -77.38))
 
-    print(test.match()) #Match
+    print(test.match2()) #Match
 
 
     test.add_passenger(passenger("Taylor","04/26/2014 00:00:00", 40.66, -77.40))
 
-    print(test.match()) #Match
+    print(test.match2()) #Match
 
     test.add_passenger(passenger("Tom","04/25/2014 00:00:00", 40.66, -77.430))
 
-    print(test.match()) #None
+    print(test.match2()) #None
 
     test.add_passenger(passenger("Emma Stone","04/25/2014 00:00:00", 40.88, -77.42))
 
-    print(test.match()) #None
+    print(test.match2()) #None
 
     test.add_passenger(passenger("Dom","04/25/2014 00:00:00", 40.66, -79.40))
 
-    print(test.match()) #None
+    print(test.match2()) #None
 
-    test.add_new_driver(driver("john", 40.88, -77.42))
+    test.add_new_driver(driver("john", 40.88, -77.42, "04/25/2014 00:00:00"))
 
 
-    print(test.match()) #Match John to Emma
+    print(test.match2()) #Match John to Emma
