@@ -49,4 +49,4 @@ with open('data/drivers.csv', newline='') as csvfile:
 
 while (len(test.unmatched_passengers) > 0 and len(test.available_drivers) > 0):
 
-      print(test.match2())
+      print(test.match1())

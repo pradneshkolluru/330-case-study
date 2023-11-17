@@ -55,7 +55,7 @@ class NotUber:
     def add_passenger(self, passenger):
         heapq.heappush(self.unmatched_passengers, passenger)
 
-    def match(self):
+    def match1(self):
 
         if not self.available_drivers or not self.unmatched_passengers:
             return None
@@ -66,9 +66,10 @@ class NotUber:
 
         return {
             'driver_id': driver.name,
+            'driver_obj' : driver,
             'passenger_id': passenger.name,
-            'travel_time': dist,
-        }
+            'passenger_obj': passenger,
+            'distance_travel': dist}
     
     def match2(self, verbose = False):
 
@@ -80,6 +81,60 @@ class NotUber:
 
         early = passenger.startTime
         dist = distance(driver.loc, passenger.sloc)
+
+
+        cache = []
+
+        while len(self.unmatched_passengers) > 0:
+
+            temp = heapq.heappop(self.unmatched_passengers)
+
+            if temp.startTime == early:
+
+                temp_dist = distance(driver.loc, temp.sloc)
+                
+                print("Request Time Match")
+                if verbose:
+                    print("Request Match")
+                    print((passenger.name, temp.name))
+                    print((dist, temp_dist))
+
+                if  temp_dist < dist:
+
+                    cache.append(passenger)
+
+                    passenger = temp
+                    dist = temp_dist
+                
+                else:
+
+                    cache.append(temp)
+            else:
+
+                heapq.heappush(self.unmatched_passengers, temp)
+                break
+
+        
+        for i in cache:
+
+            heapq.heappush(self.unmatched_passengers, i)
+
+
+        return {
+            'driver_id': driver.name,
+            'passenger_id': passenger.name,
+            'travel_time': dist,
+        }
+    
+    def match3(self, verbose = False):
+
+        if not self.available_drivers or not self.unmatched_passengers:
+            return None
+
+        driver = heapq.heappop(self.available_drivers)
+        passenger = heapq.heappop(self.unmatched_passengers)
+
+        early = passenger.startTime
 
 
         cache = []
