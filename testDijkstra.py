@@ -1,6 +1,7 @@
 import csv
 import sys
 import heapq
+import datetime
 
 adjacency = {}
 
@@ -28,25 +29,13 @@ class path:
             return retWeekend
         else:
             return retWeekday
-        
-    def getTimeTraversal(date):
-
-
-        if date.weekday() in range(0, 5):
-
-            dayType = "weekday"
-
-        else:
-            dayType = "weekend"
-
-        hour = date.hour
-
-        return (dayType, hour)
 
 
 
 
 def genAdj():
+
+
     with open('data/edges.csv', newline='') as csvfile:
 
             edgeReader = csv.reader(csvfile, delimiter=',', )
@@ -76,13 +65,15 @@ def genAdj():
                 edgeId = edgeId + 1
 
 
-def dijkstra(graph, start, end):
+def dijkstra(graph, start, end, timeStamp):
     #start by setting everything to infinity like usual
     distances = {node: float('infinity') for node in graph}
     distances[start] = 0 # starting node distance to itself is 0
 
     # priority queue to keep track of what node to visit next
     priority_queue = [(0, start)]
+
+    timeDes = getTimeTraversal(timeStamp)
 
     while priority_queue:
         current_distance, current_node = heapq.heappop(priority_queue)
@@ -93,7 +84,11 @@ def dijkstra(graph, start, end):
 
     # check neighbors
         for neighbor_path in graph.get(current_node, []):
-            total_distance = current_distance + neighbor_path.weekdayTimes[0]
+            
+            if timeDes[0] == "weekday":
+                total_distance = current_distance + neighbor_path.weekdayTimes[timeDes[1]]
+            else:
+                total_distance = current_distance + neighbor_path.weekdayTimes[timeDes[1]]
 
             # Check if the new distance is shorter than the known distance to the neighbor.
             if total_distance < distances[neighbor_path.id]:
@@ -111,6 +106,22 @@ def dijkstra(graph, start, end):
 
 # print(f"Shortest distance from {source_node} to {end_node}: {shortest_distance}")
 
+
+def getTimeTraversal(timeStamp):
+        
+        if timeStamp.weekday() in range(0, 5):
+
+            dayType = "weekday"
+
+        else:
+            dayType = "weekend"
+
+        hour = timeStamp.hour
+
+        return (dayType, hour)
+
+
+
 def main():
     #adjacency = {1: [path(2, 5, [40], [40]), path(3, 30, [40], [40])], 2: [path(1, 5, [50], [50]), path(3, 5, [50], [50])], 3:[path(2, 5, [50] ,[50]), path(1, 30, [15], [15])]}
 
@@ -120,9 +131,11 @@ def main():
     
     adjacency = {1: [path(2, 5, [40], [40]), path(3, 5, [100], [40])], 2: [path(1, 5, [100], [50]), path(3, 5, [40], [50])], 3:[path(2, 5, [50], [50]), path(1, 30, [15], [15])]}
 
-    shortest_distance = dijkstra(adjacency, 1, 3)
+    shortest_distance = dijkstra(adjacency, 1, 3, datetime.datetime.strptime("11/20/2023 00:44:00", "%m/%d/%Y %H:%M:%S"))
 
     print(shortest_distance)
+
+    print(getTimeTraversal(datetime.datetime.strptime("11/20/2023 13:44:00", "%m/%d/%Y %H:%M:%S")))
 
 
 if __name__ == "__main__":
