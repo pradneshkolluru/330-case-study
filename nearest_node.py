@@ -1,7 +1,7 @@
 def read_coordinates():
     import json
 
-    with open("/Users/emmachun/Downloads/data/node_data.json", 'r') as file:
+    with open("data/node_data.json", 'r') as file:
         data = json.load(file)
     return data
 
