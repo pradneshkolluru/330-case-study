@@ -37,7 +37,7 @@ class path:
 def genAdj():
 
 
-    with open('/Users/emmachun/Downloads/data/edges.csv', newline='') as csvfile:
+    with open('data/edges.csv', newline='') as csvfile:
 
             edgeReader = csv.reader(csvfile, delimiter=',', )
 
@@ -67,15 +67,13 @@ def genAdj():
 
 
 def dijkstra(graph, start, end, timeStamp):
-    print(end)
 
-    # start = int(start)
-    # end = int(end)
+    start = int(start)
+    end = int(end)
     
     #start by setting everything to infinity like usual
     distances = {node: float('infinity') for node in graph}
     distances[start] = 0 # starting node distance to itself is 0
-    print(distances)
     # priority queue to keep track of what node to visit next
     priority_queue = [(0, start)]
 
@@ -83,17 +81,14 @@ def dijkstra(graph, start, end, timeStamp):
 
     while priority_queue:
         current_distance, current_node = heapq.heappop(priority_queue)
-        print(distances[current_node])
-        print(graph.get(current_node, []))
+        # print(distances[current_node])
+        # print(graph.get(current_node, []))
     # if distance at node is shorter than current distance, ignore
         if current_distance > distances[current_node]:
-            print("first if")
             continue
 
     # check neighbors
-        for neighbor_path in graph.get(current_node, []):
-            print("for")
-            
+        for neighbor_path in graph.get(current_node, []):            
             if timeDes[0] == "weekday":
                 total_distance = current_distance + neighbor_path.weekdayTimes[timeDes[1]]
             else:
@@ -101,11 +96,9 @@ def dijkstra(graph, start, end, timeStamp):
 
             # Check if the new distance is shorter than the known distance to the neighbor.
             if total_distance < distances[neighbor_path.id]:
-                print("yes")
                 distances[neighbor_path.id] = total_distance
                 heapq.heappush(priority_queue, (total_distance, neighbor_path.id))
-            print(distances)
-    return distances[end]
+    return distances[int(end)]
    
 # # Example usage
 # source_node = 12345678 # Replace with your actual source node ID
@@ -130,18 +123,21 @@ def getTimeTraversal(timeStamp):
         return (dayType, hour)
 
 def closestNodesDijkstra(startcoords, endcoords, timestamp):
+    
     startcoordsdict = {'lon': startcoords[1], 'lat': startcoords[0]}
     endcoordsdict = {'lon': endcoords[1], 'lat': endcoords[0]}
     start = find_closest_coordinate(startcoordsdict, coordinates)
     end = find_closest_coordinate(endcoordsdict, coordinates)
+
+    # print(start, end)
     # print(start)
     # print(end)
     return dijkstra(adjacency, start, end, timestamp)
 
-def main():
-    #adjacency = {1: [path(2, 5, [40], [40]), path(3, 30, [40], [40])], 2: [path(1, 5, [50], [50]), path(3, 5, [50], [50])], 3:[path(2, 5, [50] ,[50]), path(1, 30, [15], [15])]}
+# def main():
+#     #adjacency = {1: [path(2, 5, [40], [40]), path(3, 30, [40], [40])], 2: [path(1, 5, [50], [50]), path(3, 5, [50], [50])], 3:[path(2, 5, [50] ,[50]), path(1, 30, [15], [15])]}
 
-    # genAdj()
+#     genAdj()
     # shortest_distance = dijkstra(adjacency, 39076461, 42847609)
     
     
@@ -150,10 +146,13 @@ def main():
     # shortest_distance = dijkstra(adjacency, 1, 3, datetime.datetime.strptime("11/20/2023 00:44:00", "%m/%d/%Y %H:%M:%S"))
 
     # print(shortest_distance)
-    passengercoords = [-73.935242, 40.655865]
-    drivercoords = [40.667, -73.8713]
-    print(closestNodesDijkstra(passengercoords, drivercoords, datetime.datetime.strptime("11/20/2023 00:44:00", "%m/%d/%Y %H:%M:%S")))
+    # passengercoords = [-73.935242, 40.655865]
+    # drivercoords = [40.667, -73.8713]
+    # #print(adjacency.keys())
+    # print(closestNodesDijkstra(passengercoords, drivercoords, datetime.datetime.strptime("11/20/2023 00:44:00", "%m/%d/%Y %H:%M:%S")))
+
+    
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
