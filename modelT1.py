@@ -1,11 +1,12 @@
 from task1 import NotUber, passenger, driver
 import csv
-
+from testDijkstra import closestNodesDijkstra
+import datetime
 
 test = NotUber()
 
 # addPassengers
-with open('data/passengers.csv', newline='') as csvfile:
+with open('/Users/emmachun/Downloads/data/passengers.csv', newline='') as csvfile:
         
 
         passengerreader = csv.reader(csvfile, delimiter=',', )
@@ -26,7 +27,7 @@ with open('data/passengers.csv', newline='') as csvfile:
             passengerid = passengerid + 1
 
 # addDrivers
-with open('data/drivers.csv', newline='') as csvfile:
+with open('/Users/emmachun/Downloads/data/drivers.csv', newline='') as csvfile:
 
         driverreader = csv.reader(csvfile, delimiter=',', )
 
@@ -48,5 +49,14 @@ with open('data/drivers.csv', newline='') as csvfile:
 
 
 while (len(test.unmatched_passengers) > 0 and len(test.available_drivers) > 0):
-
-      print(test.match1())
+      
+      match = test.match1()
+      print(match)
+      t1 = float(closestNodesDijkstra(match['passenger_obj'].sloc, match['driver_obj'].loc, match['passenger_obj'].startTime))
+      t2 = float(closestNodesDijkstra(match['passenger_obj'].sloc, match['passenger_obj'].dloc, match['passenger_obj'].startTime))
+      print(t1)
+      print(t2)
+      #print(type(t1))
+      recycled_driver = match['driver_obj']
+      recycled_driver.time_available = recycled_driver.time_available + datetime.timedelta(hours=t1) + datetime.timedelta(hours=t2)
+      test.add_new_driver(recycled_driver)
