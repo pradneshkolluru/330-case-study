@@ -37,7 +37,6 @@ class path:
 
 def genAdj():
 
-
     with open('data/edges.csv', newline='') as csvfile:
 
             edgeReader = csv.reader(csvfile, delimiter=',', )
@@ -66,6 +65,7 @@ def genAdj():
 
                 edgeId = edgeId + 1
 
+print("hello")
 genAdj()
 
 def dijkstra(graph, start, end, timeStamp):
@@ -161,10 +161,12 @@ def euc_distance(location1, location2):
     dlon = lon2 - lon1
     dlat = lat2 - lat1
 
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    # a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    # c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
-    distance = R * c
+    # distance = R * c
+    
+    distance = ((dlon) ** 2 + (dlat) ** 2) ** (0.5)
 
     return distance
 
