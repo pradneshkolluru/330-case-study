@@ -2,9 +2,10 @@ import csv
 import sys
 import heapq
 import datetime
-from nearest_node import find_closest_coordinate, coordinates
+#from nearest_node import find_closest_coordinate, coordinates
 
 adjacency = {}
+
 
 class path:
     def __init__(self, end_id, length, weekday, weekend):
@@ -65,6 +66,7 @@ def genAdj():
 
                 edgeId = edgeId + 1
 
+genAdj()
 
 def dijkstra(graph, start, end, timeStamp):
 
@@ -122,6 +124,7 @@ def getTimeTraversal(timeStamp):
 
         return (dayType, hour)
 
+
 def closestNodesDijkstra(startcoords, endcoords, timestamp):
     
     startcoordsdict = {'lon': startcoords[1], 'lat': startcoords[0]}
@@ -134,10 +137,61 @@ def closestNodesDijkstra(startcoords, endcoords, timestamp):
     # print(end)
     return dijkstra(adjacency, start, end, timestamp)
 
-# def main():
-#     #adjacency = {1: [path(2, 5, [40], [40]), path(3, 30, [40], [40])], 2: [path(1, 5, [50], [50]), path(3, 5, [50], [50])], 3:[path(2, 5, [50] ,[50]), path(1, 30, [15], [15])]}
+def read_coordinates():
+    import json
 
-#     genAdj()
+    with open("data/node_data.json", 'r') as file:
+        data = json.load(file)
+    return data
+
+coordinates = read_coordinates()
+
+
+def euc_distance(location1, location2):
+
+    from math import sin, cos, sqrt, atan2, radians
+
+    R = 6373.0
+
+    lat1 = radians(location1["lat"])
+    lon1 = radians(location1["lon"])
+    lat2 = radians(location2["lat"])
+    lon2 = radians(location2["lon"])
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    distance = R * c
+
+    return distance
+
+
+def find_closest_coordinate(target_coord, coordinates):
+
+    # Example target_coord = {'lon': -73.935242, 'lat': 40.655865}
+
+    min_distance = float('inf') #big maximum
+    closest_node = None
+
+    for key, coords in coordinates.items():
+        distance = euc_distance(target_coord, coords)
+        if distance < min_distance:
+            min_distance = distance
+            closest_node = key
+
+    # print(min_distance)
+    return closest_node
+
+
+
+if __name__ == "__main__":
+    
+    #adjacency = {1: [path(2, 5, [40], [40]), path(3, 30, [40], [40])], 2: [path(1, 5, [50], [50]), path(3, 5, [50], [50])], 3:[path(2, 5, [50] ,[50]), path(1, 30, [15], [15])]}
+
+    genAdj()
     # shortest_distance = dijkstra(adjacency, 39076461, 42847609)
     
     
@@ -146,13 +200,7 @@ def closestNodesDijkstra(startcoords, endcoords, timestamp):
     # shortest_distance = dijkstra(adjacency, 1, 3, datetime.datetime.strptime("11/20/2023 00:44:00", "%m/%d/%Y %H:%M:%S"))
 
     # print(shortest_distance)
-    # passengercoords = [-73.935242, 40.655865]
-    # drivercoords = [40.667, -73.8713]
-    # #print(adjacency.keys())
-    # print(closestNodesDijkstra(passengercoords, drivercoords, datetime.datetime.strptime("11/20/2023 00:44:00", "%m/%d/%Y %H:%M:%S")))
-
-    
-
-
-# if __name__ == "__main__":
-#     main()
+    passengercoords = [-73.935242, 40.655865]
+    drivercoords = [40.667, -73.8713]
+    #print(adjacency.keys())
+    print(closestNodesDijkstra(passengercoords, drivercoords, datetime.datetime.strptime("11/20/2023 00:44:00", "%m/%d/%Y %H:%M:%S")))

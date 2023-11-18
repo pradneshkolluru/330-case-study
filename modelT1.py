@@ -1,6 +1,6 @@
-from task1 import NotUber, passenger, driver
+from uberAlgos import NotUber, passenger, driver
 import csv
-from testDijkstra import closestNodesDijkstra, genAdj
+from helperFuncs import closestNodesDijkstra, genAdj
 import datetime
 
 test = NotUber()
@@ -49,8 +49,6 @@ with open('data/drivers.csv', newline='') as csvfile:
             test.add_new_driver(driver(driverid, row[1], row[2], row[0]))
             driverid = driverid + 1
 
-genAdj()
-
 while (len(test.unmatched_passengers) > 0 and len(test.available_drivers) > 0):
       
       match = test.match1()
@@ -60,4 +58,7 @@ while (len(test.unmatched_passengers) > 0 and len(test.available_drivers) > 0):
       t2 = closestNodesDijkstra(match['passenger_obj'].sloc, match['passenger_obj'].dloc, match['passenger_obj'].startTime)
       recycled_driver = match['driver_obj']
       recycled_driver.time_available = recycled_driver.time_available + datetime.timedelta(hours=t1) + datetime.timedelta(hours=t2)
+
+
+      print(recycled_driver.time_available)
       test.add_new_driver(recycled_driver)
