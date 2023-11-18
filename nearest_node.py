@@ -1,7 +1,7 @@
 def read_coordinates():
     import json
 
-    with open("data/node_data.json", 'r') as file:
+    with open("/Users/emmachun/Downloads/data/node_data.json", 'r') as file:
         data = json.load(file)
     return data
 
@@ -50,14 +50,14 @@ def find_closest_coordinate(target_coord, coordinates):
             min_distance = distance
             closest_node = key
 
-    print(min_distance)
+    # print(min_distance)
     return closest_node
 
 # Example usage:
-input_coordinates = {'lon': -73.935242, 'lat': 40.655865}
+# input_coordinates = {'lon': -73.935242, 'lat': 40.655865}
 
-closest_coord = find_closest_coordinate(input_coordinates, coordinates)
-print(f"The closest coordinate to {input_coordinates} is {closest_coord, coordinates[closest_coord]}.")
+# closest_coord = find_closest_coordinate(input_coordinates, coordinates)
+# print(f"The closest coordinate to {input_coordinates} is {closest_coord, coordinates[closest_coord]}.")
 
 
 #okay now to do it more efficiently
