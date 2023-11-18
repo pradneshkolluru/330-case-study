@@ -206,8 +206,63 @@ class NotUber:
             'passenger_obj': passenger}
 
     def match4():
-        pass
+        class Node:
+            def __init__(self, row, col):
+                self.row = row
+                self.col = col
+                self.g = 0
+                self.h = 0
+                self.parent = None
+            
+            def __lt__(self, other):
+                return (self.g + self.h) < (other.g + other.h)
+        
+        def heuristic(node, goal):
+            return abs(node.row - goal.row) + abs(node.col - goal.col)
+        
+        def astar(grid, start, goal):
+            open_set = []
+            closed_set = set()
 
+            start_node = Node(start[0], start[1])
+            goal_node = Node(goal[0], goal[1])
+
+            heapq.heappush(open_set, start_node)
+
+            while open_set:
+                current_node = heapq.heappop(open_set)
+
+                if current_node.row == goal_node.row and current_node.col == goal_node.col:
+                    path = []
+                    while current_node:
+                        path.append((current_node.row, current_node.col))
+                        current_node = current_node.parent
+                    return path[::-1]
+
+                closed_set.add((current_node.row, current_node.col))
+
+                neighbors = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+                for n in neighbors:
+                    new_row, new_col = current_node.row + n[0], current_node.col + n[1]
+
+                    if(
+                        0 <= new_row < len(grid) and
+                        0 <= new_col < len(grid[0]) and
+                        grid[new_row][new_col] != 1 and
+                        (new_row, new_col) not in closed_set
+                    ):
+                        
+                        neighbor = Node(new_row, new_col)
+                        neighbor.g = current_node.g + 1
+                        neighbor.h = heuristic(neighbor, goal_node)
+                        neighbor.parent = current_node
+
+                        if neighbor not in open_set:
+                            heapq.heappush(open_set, neighbor)
+                            
+            return None
+    
     def match5():
         pass
     
