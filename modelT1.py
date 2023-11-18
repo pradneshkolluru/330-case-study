@@ -2,6 +2,7 @@ from uberAlgos import NotUber, passenger, driver
 import csv
 from helperFuncs import closestNodesDijkstra, genAdj
 import datetime
+import timeit
 
 test = NotUber()
 
@@ -52,28 +53,43 @@ with open('data/drivers.csv', newline='') as csvfile:
             test.add_new_driver(driver(driverid, row[1], row[2], row[0]))
             driverid = driverid + 1
 
-while (len(test.unmatched_passengers) > 0 and len(test.available_drivers) > 0):
-      
-      match = test.match1()
-      print(match)
-      
-      t1 = closestNodesDijkstra(match['passenger_obj'].sloc, match['driver_obj'].loc, match['passenger_obj'].startTime)
-      t2 = closestNodesDijkstra(match['passenger_obj'].sloc, match['passenger_obj'].dloc, match['passenger_obj'].startTime)
-      t3 = 0
-      if not (match['available_immediately']):
+
+def execModel(verbose = True):
+
+      totalnumPassengers = len(test.unmatched_passengers)
+
+      while (len(test.unmatched_passengers) > 0 and len(test.available_drivers) > 0):
             
-            print(datetime.datetime.strftime(match['driver_obj'].time_available, "%m/%d/%Y %H:%M:%S"))
-            print(datetime.datetime.strftime(match['passenger_obj'].startTime, "%m/%d/%Y %H:%M:%S"))
+            match = test.match1()
 
-            time_difference = match['driver_obj'].time_available - match['passenger_obj'].startTime
+            if verbose:
+                  #print(match)
 
-            print(time_difference)
-            t3 = time_difference.total_seconds() / 3600
-            print(t3)
-            print(t3)
-      recycled_driver = match['driver_obj']
-      recycled_driver.time_available = recycled_driver.time_available + datetime.timedelta(hours=t1) + datetime.timedelta(hours=t2) + datetime.timedelta(hours=t3)
-      recycled_driver.loc = match['passenger_obj'].dloc
+                  print((totalnumPassengers - len(test.unmatched_passengers)) / totalnumPassengers)
+            
+            t1 = closestNodesDijkstra(match['passenger_obj'].sloc, match['driver_obj'].loc, match['passenger_obj'].startTime)
+            t2 = closestNodesDijkstra(match['passenger_obj'].sloc, match['passenger_obj'].dloc, match['passenger_obj'].startTime)
+            t3 = 0
+            if not (match['available_immediately']):
+                  
+                  #print(datetime.datetime.strftime(match['driver_obj'].time_available, "%m/%d/%Y %H:%M:%S"))
+                  #print(datetime.datetime.strftime(match['passenger_obj'].startTime, "%m/%d/%Y %H:%M:%S"))
 
-      print(recycled_driver.time_available)
-      test.add_new_driver(recycled_driver)
+                  time_difference = match['driver_obj'].time_available - match['passenger_obj'].startTime
+
+                  #print(time_difference)
+                  t3 = time_difference.total_seconds() / 3600
+                  #print(t3)
+                  #print(t3)
+            recycled_driver = match['driver_obj']
+            recycled_driver.time_available = recycled_driver.time_available + datetime.timedelta(hours=t1) + datetime.timedelta(hours=t2) + datetime.timedelta(hours=t3)
+            recycled_driver.loc = match['passenger_obj'].dloc
+
+            #print(recycled_driver.time_available)
+            test.add_new_driver(recycled_driver)
+
+
+if __name__ == "__main__":
+
+      execution_time = timeit.timeit(execModel, number=1)
+      print("Execution time:", execution_time, "seconds")
