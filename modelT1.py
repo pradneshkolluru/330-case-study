@@ -58,7 +58,7 @@ while (len(test.unmatched_passengers) > 0 and len(test.available_drivers) > 0):
       t2 = closestNodesDijkstra(match['passenger_obj'].sloc, match['passenger_obj'].dloc, match['passenger_obj'].startTime)
       recycled_driver = match['driver_obj']
       recycled_driver.time_available = recycled_driver.time_available + datetime.timedelta(hours=t1) + datetime.timedelta(hours=t2)
-
+      recycled_driver.loc = match['passenger_obj'].dloc
 
       print(recycled_driver.time_available)
       test.add_new_driver(recycled_driver)
