@@ -1,5 +1,6 @@
 import heapq
 import datetime
+from helperFuncs import closestNodesDijkstra
 
 
 class driver:
@@ -74,7 +75,7 @@ class NotUber:
     @staticmethod
     def isAvailable(driver, passenger):
 
-        print(driver.time_available <= passenger.startTime)
+        #print(driver.time_available <= passenger.startTime)
 
         return driver.time_available <= passenger.startTime
     
@@ -142,8 +143,67 @@ class NotUber:
             'passenger_obj': passenger,
             'available_immediately': True}
     
-    def match3():
-        pass
+
+    def match3_inefficient(self):
+
+        if not self.available_drivers or not self.unmatched_passengers:
+            return None
+
+    
+        passenger = heapq.heappop(self.unmatched_passengers)
+        tempDriverAloc = heapq.heappop(self.available_drivers)
+
+        if not NotUber.isAvailable(tempDriverAloc, passenger):
+
+            print("First Element")
+            return {
+            'driver_id': tempDriverAloc.name,
+            'driver_obj' : tempDriverAloc,
+            'passenger_id': passenger.name,
+            'passenger_obj': passenger}
+        
+
+        minTravelTime = closestNodesDijkstra(tempDriverAloc.loc, passenger.sloc, max(passenger.startTime, tempDriverAloc.time_available))
+
+        driverCache = []
+
+        
+        while len(self.available_drivers) > 0:
+
+            temp = heapq.heappop(self.available_drivers)
+
+            if NotUber.isAvailable(temp, passenger):
+
+                temp_time = closestNodesDijkstra(temp.loc, passenger.sloc, max(passenger.startTime, tempDriverAloc.time_available))
+        
+
+                if  temp_time < minTravelTime:
+
+                    driverCache.append(tempDriverAloc)
+
+                    tempDriverAloc = temp
+                    minTravelTime = temp_time
+                
+                else:
+
+                    driverCache.append(temp)
+
+            else:
+
+                heapq.heappush(self.available_drivers, temp)
+                break
+
+        
+        for i in driverCache:
+
+            heapq.heappush(self.available_drivers, i)
+
+
+        return {
+            'driver_id': tempDriverAloc.name,
+            'driver_obj' : tempDriverAloc,
+            'passenger_id': passenger.name,
+            'passenger_obj': passenger}
 
     def match4():
         pass
