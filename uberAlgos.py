@@ -69,7 +69,7 @@ class NotUber:
             'driver_obj' : driver,
             'passenger_id': passenger.name,
             'passenger_obj': passenger,
-            'distance_travel': dist}
+            'available_immediately': NotUber.isAvailable(driver, passenger)}
     
     @staticmethod
     def isAvailable(driver, passenger):
@@ -95,7 +95,8 @@ class NotUber:
             'driver_id': tempDriverAloc.name,
             'driver_obj' : tempDriverAloc,
             'passenger_id': passenger.name,
-            'passenger_obj': passenger}
+            'passenger_obj': passenger,
+            'available_immediately': False}
         
 
         minEucDist = distance(tempDriverAloc.loc, passenger.sloc)
@@ -138,7 +139,8 @@ class NotUber:
             'driver_id': tempDriverAloc.name,
             'driver_obj' : tempDriverAloc,
             'passenger_id': passenger.name,
-            'passenger_obj': passenger}
+            'passenger_obj': passenger,
+            'available_immediately': True}
     
     def match3():
         pass
