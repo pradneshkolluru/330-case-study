@@ -62,7 +62,7 @@ def execModel(verbose = True):
 
       while (len(test.unmatched_passengers) > 0 and len(test.available_drivers) > 0):
             
-            match = test.match3_inefficient()
+            match = test.match3_efficient()
 
             if verbose:
                   #print(match)

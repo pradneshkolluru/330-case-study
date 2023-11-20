@@ -164,7 +164,7 @@ class NotUber:
             'available_immediately': False}
         
 
-        minTravelTime = closestNodesDijkstra(tempDriverAloc.loc, passenger.sloc, max(passenger.startTime, tempDriverAloc.time_available))
+        minTravelTime = closestNodesDijkstra(tempDriverAloc.loc, passenger.sloc, passenger.startTime)
 
         driverCache = []
 
@@ -175,7 +175,7 @@ class NotUber:
 
             if NotUber.isAvailable(temp, passenger):
 
-                temp_time = closestNodesDijkstra(temp.loc, passenger.sloc, max(passenger.startTime, tempDriverAloc.time_available))
+                temp_time = closestNodesDijkstra(temp.loc, passenger.sloc, passenger.startTime)
         
 
                 if  temp_time < minTravelTime:
@@ -229,7 +229,7 @@ class NotUber:
 
         driverCache = []
 
-        shortestPaths = closestNodesDijkstra(passenger.sloc, None, max(passenger.startTime, tempDriverAloc.time_available))
+        shortestPaths = closestNodesDijkstra(passenger.sloc, None, passenger.startTime)
 
         startCoord = {'lat': tempDriverAloc.loc[0], 'lon': tempDriverAloc.loc[1]}
 
