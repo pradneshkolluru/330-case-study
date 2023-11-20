@@ -21,8 +21,8 @@ with open('data/passengers.csv', newline='') as csvfile:
                   passengerid = passengerid + 1
                   continue
             
-            if passengerid == 4:
-                  break
+            # if passengerid == 4:
+            #       break
 
             for i in range(1, len(row)):
                     row[i] = float(row[i])
@@ -65,7 +65,13 @@ def execModel(verbose = True):
             if verbose:
                   #print(match)
 
-                  print((totalnumPassengers - len(test.unmatched_passengers)) / totalnumPassengers)
+                  progress = round(((totalnumPassengers - len(test.unmatched_passengers)) * 100) / totalnumPassengers, 2)
+
+
+                  print(f"{progress}% Completed")
+
+                  # if progress > 1.0:
+                  #       break
             
             t1 = closestNodesDijkstra(match['passenger_obj'].sloc, match['driver_obj'].loc, match['passenger_obj'].startTime)
             t2 = closestNodesDijkstra(match['passenger_obj'].sloc, match['passenger_obj'].dloc, match['passenger_obj'].startTime)

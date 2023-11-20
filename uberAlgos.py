@@ -285,10 +285,7 @@ def distance(location1, location2):
     dlon = lon2 - lon1
     dlat = lat2 - lat1
 
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
-    distance = R * c
+    distance = ((dlon) ** 2 + (dlat ** 2)) ** 0.5
 
     return distance
 
