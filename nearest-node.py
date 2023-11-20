@@ -19,7 +19,7 @@ coordinates = read_coordinates()
 # print(type(coordinates["42467333"]["lon"]))
 
 #calculate distance
-def euc_distance(location1, location2):
+def distance(location1, location2):
 
     from math import sin, cos, sqrt, atan2, radians
 
@@ -45,9 +45,9 @@ def find_closest_coordinate(target_coord, coordinates):
     closest_node = None
 
     for key, coords in coordinates.items():
-        distance = euc_distance(target_coord, coords)
-        if distance < min_distance:
-            min_distance = distance
+        dist = distance(target_coord, coords)
+        if dist < min_distance:
+            min_distance = dist
             closest_node = key
 
     print(min_distance)
@@ -60,7 +60,6 @@ closest_coord = find_closest_coordinate(input_coordinates, coordinates)
 print(f"The closest coordinate to {input_coordinates} is {closest_coord, coordinates[closest_coord]}.")
 
 
-#okay now to do it more efficiently
 
 
 
