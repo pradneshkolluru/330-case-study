@@ -53,6 +53,8 @@ with open('data/drivers.csv', newline='') as csvfile:
             test.add_new_driver(driver(driverid, row[1], row[2], row[0]))
             driverid = driverid + 1
 
+profit_list = []
+passengers_waiting_list = []
 
 def execModel(verbose = True):
 
@@ -84,6 +86,11 @@ def execModel(verbose = True):
             recycled_driver = match['driver_obj']
             recycled_driver.time_available = recycled_driver.time_available + datetime.timedelta(hours=t1) + datetime.timedelta(hours=t2) + datetime.timedelta(hours=t3)
             recycled_driver.loc = match['passenger_obj'].dloc
+        
+            profit = (t2*60) - (t1*60)
+            profit_list.append(profit)
+
+            passengers_waiting_list.append(t1*60)
 
             #print(recycled_driver.time_available)
             test.add_new_driver(recycled_driver)
@@ -93,3 +100,15 @@ if __name__ == "__main__":
 
       execution_time = timeit.timeit(execModel, number=1)
       print("Execution time:", execution_time, "seconds")
+
+      avg_profit = sum(profit_list)/float(len(profit_list))
+      print("Average profit: ", avg_profit)
+      sum_profit = sum(profit_list)
+      print("Profit sum: ", sum_profit)
+
+
+      avg_time_waiting = sum(passengers_waiting_list)/float(len(passengers_waiting_list))
+      print("Average passenger waittime: ", avg_time_waiting)
+
+      sum_time_waiting = sum(passengers_waiting_list)
+      print("Passenger waittime sum: ", sum_time_waiting)
