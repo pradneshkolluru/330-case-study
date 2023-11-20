@@ -3,6 +3,7 @@ import sys
 import heapq
 import datetime
 import timeit
+from math import radians
 
 #from nearest_node import find_closest_coordinate, coordinates
 
@@ -175,8 +176,6 @@ coordinates = read_coordinates()
 
 
 def euc_distance(location1, location2):
-
-    from math import sin, cos, sqrt, atan2, radians
 
 
     lat1 = radians(location1["lat"])

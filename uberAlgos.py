@@ -1,6 +1,7 @@
 import heapq
 import datetime
 from helperFuncs import closestNodesDijkstra, find_closest_coordinate
+from math import radians
 
 
 class driver:
@@ -343,7 +344,6 @@ def find_time(start_location, end_location):
 
 def distance(location1, location2):
 
-    from math import sin, cos, sqrt, atan2, radians
 
     R = 6373.0
 
