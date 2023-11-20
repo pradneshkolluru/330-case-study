@@ -73,7 +73,9 @@ genAdj()
 def dijkstra(graph, start, end, timeStamp, retAll = False):
 
     start = int(start)
-    end = int(end)
+
+    if end:
+        end = int(end)
     
     #start by setting everything to infinity like usual
     distances = {node: float('infinity') for node in graph}
@@ -95,9 +97,10 @@ def dijkstra(graph, start, end, timeStamp, retAll = False):
 
         visited.add(current_node)
 
-        if current_node == end and not retAll:
+        if end:
+            if current_node == end and not retAll:
 
-            break
+                break
 
         if current_distance > distances[current_node]:
 
@@ -115,7 +118,10 @@ def dijkstra(graph, start, end, timeStamp, retAll = False):
                 distances[neighbor_path.id] = total_distance
                 heapq.heappush(priority_queue, (total_distance, neighbor_path.id))
     
-    return distances[int(end)]
+    if end:
+        return distances[int(end)]
+    else:
+        return distances
    
 # # Example usage
 # source_node = 12345678 # Replace with your actual source node ID
@@ -143,9 +149,15 @@ def getTimeTraversal(timeStamp):
 def closestNodesDijkstra(startcoords, endcoords, timestamp):
     
     startcoordsdict = {'lon': startcoords[1], 'lat': startcoords[0]}
-    endcoordsdict = {'lon': endcoords[1], 'lat': endcoords[0]}
-    start = find_closest_coordinate(startcoordsdict, coordinates)
-    end = find_closest_coordinate(endcoordsdict, coordinates)
+    start = find_closest_coordinate(startcoordsdict)
+
+    end = None
+
+    if endcoords:
+
+        endcoordsdict = {'lon': endcoords[1], 'lat': endcoords[0]}
+
+        end = find_closest_coordinate(endcoordsdict)
 
     # print(start, end)
     # print(start)
@@ -185,7 +197,7 @@ def euc_distance(location1, location2):
     return distance
 
 
-def find_closest_coordinate(target_coord, coordinates):
+def find_closest_coordinate(target_coord):
 
     # Example target_coord = {'lon': -73.935242, 'lat': 40.655865}
 

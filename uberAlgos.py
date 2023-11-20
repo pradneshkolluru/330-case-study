@@ -1,6 +1,6 @@
 import heapq
 import datetime
-from helperFuncs import closestNodesDijkstra
+from helperFuncs import closestNodesDijkstra, find_closest_coordinate
 
 
 class driver:
@@ -63,7 +63,6 @@ class NotUber:
 
         driver = heapq.heappop(self.available_drivers)
         passenger = heapq.heappop(self.unmatched_passengers)
-        dist = distance(driver.loc, passenger.sloc)
 
         return {
             'driver_id': driver.name,
@@ -135,6 +134,7 @@ class NotUber:
 
             heapq.heappush(self.available_drivers, i)
 
+        print("driver available")
 
         return {
             'driver_id': tempDriverAloc.name,
@@ -160,7 +160,8 @@ class NotUber:
             'driver_id': tempDriverAloc.name,
             'driver_obj' : tempDriverAloc,
             'passenger_id': passenger.name,
-            'passenger_obj': passenger}
+            'passenger_obj': passenger,
+            'available_immediately': False}
         
 
         minTravelTime = closestNodesDijkstra(tempDriverAloc.loc, passenger.sloc, max(passenger.startTime, tempDriverAloc.time_available))
@@ -203,7 +204,76 @@ class NotUber:
             'driver_id': tempDriverAloc.name,
             'driver_obj' : tempDriverAloc,
             'passenger_id': passenger.name,
-            'passenger_obj': passenger}
+            'passenger_obj': passenger,
+            'available_immediately': True}
+    
+    def match3_efficient(self):
+
+        if not self.available_drivers or not self.unmatched_passengers:
+            return None
+
+    
+        passenger = heapq.heappop(self.unmatched_passengers)
+        tempDriverAloc = heapq.heappop(self.available_drivers)
+
+        if not NotUber.isAvailable(tempDriverAloc, passenger):
+
+            print("First Element")
+            return {
+            'driver_id': tempDriverAloc.name,
+            'driver_obj' : tempDriverAloc,
+            'passenger_id': passenger.name,
+            'passenger_obj': passenger,
+            'available_immediately': False}
+        
+
+        driverCache = []
+
+        shortestPaths = closestNodesDijkstra(passenger.sloc, None, max(passenger.startTime, tempDriverAloc.time_available))
+
+        startCoord = {'lat': tempDriverAloc.loc[0], 'lon': tempDriverAloc.loc[1]}
+
+        minTravelTime = shortestPaths[int(find_closest_coordinate(startCoord))]
+
+        
+        while len(self.available_drivers) > 0:
+
+            temp = heapq.heappop(self.available_drivers)
+            if NotUber.isAvailable(temp, passenger):
+
+                coord = {'lat': temp.loc[0], 'lon': temp.loc[1]}
+
+                temp_time = shortestPaths[int(find_closest_coordinate(coord))]
+        
+
+                if  temp_time < minTravelTime:
+
+                    driverCache.append(tempDriverAloc)
+
+                    tempDriverAloc = temp
+                    minTravelTime = temp_time
+                
+                else:
+
+                    driverCache.append(temp)
+
+            else:
+
+                heapq.heappush(self.available_drivers, temp)
+                break
+
+        
+        for i in driverCache:
+
+            heapq.heappush(self.available_drivers, i)
+
+
+        return {
+            'driver_id': tempDriverAloc.name,
+            'driver_obj' : tempDriverAloc,
+            'passenger_id': passenger.name,
+            'passenger_obj': passenger,
+            'available_immediately': True}
 
     def match4():
         class Node:
