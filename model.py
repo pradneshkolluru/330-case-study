@@ -62,7 +62,7 @@ def execModel(verbose = True):
 
       while (len(test.unmatched_passengers) > 0 and len(test.available_drivers) > 0):
             
-            match = test.match3_inefficient()
+            match = test.match3_efficient()
 
             if verbose:
                   #print(match)
@@ -79,29 +79,45 @@ def execModel(verbose = True):
 
                   # if progress > 1.0:
                   #       break
-            
-            t1 = closestNodesDijkstra(match['passenger_obj'].sloc, match['driver_obj'].loc, match['passenger_obj'].startTime)
-            t2 = closestNodesDijkstra(match['passenger_obj'].sloc, match['passenger_obj'].dloc, match['passenger_obj'].startTime)
-            t3 = 0
-            if not (match['available_immediately']):
-                  
-                  #print(datetime.datetime.strftime(match['driver_obj'].time_available, "%m/%d/%Y %H:%M:%S"))
-                  #print(datetime.datetime.strftime(match['passenger_obj'].startTime, "%m/%d/%Y %H:%M:%S"))
-
-                  time_difference = match['driver_obj'].time_available - match['passenger_obj'].startTime
-
-                  #print(time_difference)
-                  t3 = time_difference.total_seconds() / 3600
-                  #print(t3)
-                  #print(t3)
             recycled_driver = match['driver_obj']
-            recycled_driver.time_available = recycled_driver.time_available + datetime.timedelta(hours=t1) + datetime.timedelta(hours=t2) + datetime.timedelta(hours=t3)
-            recycled_driver.loc = match['passenger_obj'].dloc
-        
-            profit = (t2*60) - (t1*60)
-            profit_list.append(profit)
 
-            passengers_waiting_list.append(t1*60)
+            if (match['matching_alg'] == "5"):
+                  t1 = closestNodesDijkstra(match['passenger_obj'][0].sloc, match['driver_obj'].loc, match['passenger_obj'][1].startTime)
+                  t2a = closestNodesDijkstra(match['passenger_obj'][0].sloc, match['passenger_obj'][1].sloc, match['passenger_obj'][0].startTime)
+                  t2b = closestNodesDijkstra(match['passenger_obj'][1].sloc, match['passenger_obj'][0].dloc, match['passenger_obj'][1].startTime)
+                  t2c = closestNodesDijkstra(match['passenger_obj'][0].dloc, match['passenger_obj'][1].dloc, match['passenger_obj'][1].startTime)
+                  t2 = t2a + t2b + t2c
+                  t3 = 0
+                  if not (match['available_immediately']):
+                        time_difference = match['driver_obj'].time_available - match['passenger_obj'][0].startTime
+                        #print(time_difference)
+                        t3 = time_difference.total_seconds() / 3600
+                  recycled_driver.loc = match['passenger_obj'][1].dloc
+                  profit = ((t2a + (2*t2b) + t2c) - t1) * 60
+                  passengers_waiting_list.append(t1)
+                  passengers_waiting_list.append(t1 + t2a)
+            else:
+                  t1 = closestNodesDijkstra(match['passenger_obj'].sloc, match['driver_obj'].loc, match['passenger_obj'].startTime)
+                  t2 = closestNodesDijkstra(match['passenger_obj'].sloc, match['passenger_obj'].dloc, match['passenger_obj'].startTime)
+                  t3 = 0
+                  if not (match['available_immediately']):
+                        
+                        #print(datetime.datetime.strftime(match['driver_obj'].time_available, "%m/%d/%Y %H:%M:%S"))
+                        #print(datetime.datetime.strftime(match['passenger_obj'].startTime, "%m/%d/%Y %H:%M:%S"))
+
+                        time_difference = match['driver_obj'].time_available - match['passenger_obj'].startTime
+
+                        #print(time_difference)
+                        t3 = time_difference.total_seconds() / 3600
+                        #print(t3)
+                        #print(t3)
+                  profit = (t2*60) - (t1*60)
+                  
+                  passengers_waiting_list.append(t1*60)
+                  recycled_driver.loc = match['passenger_obj'].dloc
+
+            profit_list.append(profit)
+            recycled_driver.time_available = recycled_driver.time_available + datetime.timedelta(hours=t1) + datetime.timedelta(hours=t2) + datetime.timedelta(hours=t3)
 
             #print(recycled_driver.time_available)
             test.add_new_driver(recycled_driver)
