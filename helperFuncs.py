@@ -3,7 +3,7 @@ import sys
 import heapq
 import datetime
 import timeit
-from math import radians
+from math import radians, sin, cos, sqrt, atan2
 
 #from nearest_node import find_closest_coordinate, coordinates
 
@@ -186,12 +186,12 @@ def euc_distance(location1, location2):
     dlon = lon2 - lon1
     dlat = lat2 - lat1
 
-    # a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-    # c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
-    # distance = R * c
+    distance = R * c
     # distance = ((dlon) ** 2 + (dlat ** 2)) ** 0.5
-    distance = abs(dlon) + abs(dlat)
+    # distance = abs(dlon) + abs(dlat)
 
     return distance
 
