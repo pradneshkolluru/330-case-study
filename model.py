@@ -73,9 +73,9 @@ def execModel(verbose = True):
                   print(f"{progress}% Completed")
 
 
-                  if progress > 2:
+                  # if progress > 2:
 
-                        break
+                  #       break
 
                   # if progress > 1.0:
                   #       break
