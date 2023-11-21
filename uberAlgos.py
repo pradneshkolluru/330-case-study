@@ -346,7 +346,7 @@ class NotUber:
                 return []
 
     
-    def match5(self, max_distance=5.0, verbose=False):
+    def match5(self, max_distance=2.0, verbose=False):
         if not self.available_drivers or len(self.unmatched_passengers) < 2:
             return None
 
@@ -394,8 +394,8 @@ class NotUber:
             
 
         # If the passengers are not within the set distance, match each passenger with the closest available driver individually
-        heapq.heappush(passenger1)
-        heapq.heappush(passenger2)
+        self.add_passenger(passenger1)
+        self.add_passenger(passenger2)
         return self.match2()
     
 

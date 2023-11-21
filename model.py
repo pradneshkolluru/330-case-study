@@ -62,7 +62,7 @@ def execModel(verbose = True):
 
       while (len(test.unmatched_passengers) > 0 and len(test.available_drivers) > 0):
             
-            match = test.match3_efficient()
+            match = test.match5()
 
             if verbose:
                   #print(match)
@@ -73,9 +73,9 @@ def execModel(verbose = True):
                   print(f"{progress}% Completed")
 
 
-                  if progress > 2:
+                  # if progress > 2:
 
-                        break
+                  #       break
 
                   # if progress > 1.0:
                   #       break
@@ -98,6 +98,7 @@ def execModel(verbose = True):
                   passengers_waiting_list.append(t1)
                   passengers_waiting_list.append(t1 + t2a)
             else:
+                  print(match)
                   t1 = closestNodesDijkstra(match['passenger_obj'].sloc, match['driver_obj'].loc, match['passenger_obj'].startTime)
                   t2 = closestNodesDijkstra(match['passenger_obj'].sloc, match['passenger_obj'].dloc, match['passenger_obj'].startTime)
                   t3 = 0
