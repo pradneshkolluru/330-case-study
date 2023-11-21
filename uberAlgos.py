@@ -284,14 +284,18 @@ class NotUber:
                 self.g = 0
                 self.h = 0
                 self.parent = None
-            
+
             def __lt__(self, other):
                 return (self.g + self.h) < (other.g + other.h)
-        
+
         def heuristic(node, goal):
             return abs(node.row - goal.row) + abs(node.col - goal.col)
-        
+
         def astar(grid, start, goal):
+            if not (0 <= start[0] < len(grid) and 0 <= start[1] < len(grid[0]) and
+                0 <= goal[0] < len(grid) and 0 <= goal[1] < len(grid[0])):
+                    return []
+
             open_set = []
             closed_set = set()
 
@@ -312,12 +316,12 @@ class NotUber:
 
                 closed_set.add((current_node.row, current_node.col))
 
-                neighbors = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+                neighbors = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # Adjust for diagonal movement if needed
 
                 for n in neighbors:
                     new_row, new_col = current_node.row + n[0], current_node.col + n[1]
 
-                    if(
+                    if (
                         0 <= new_row < len(grid) and
                         0 <= new_col < len(grid[0]) and
                         grid[new_row][new_col] != 1 and
@@ -331,8 +335,9 @@ class NotUber:
 
                         if neighbor not in open_set:
                             heapq.heappush(open_set, neighbor)
-                            
-            return None
+
+                return []
+
     
     def match5():
         pass
