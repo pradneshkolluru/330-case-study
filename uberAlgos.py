@@ -70,7 +70,8 @@ class NotUber:
             'driver_obj' : driver,
             'passenger_id': passenger.name,
             'passenger_obj': passenger,
-            'available_immediately': NotUber.isAvailable(driver, passenger)}
+            'available_immediately': NotUber.isAvailable(driver, passenger),
+            'matching_alg' : "1"}
     
     @staticmethod
     def isAvailable(driver, passenger):
@@ -97,7 +98,8 @@ class NotUber:
             'driver_obj' : tempDriverAloc,
             'passenger_id': passenger.name,
             'passenger_obj': passenger,
-            'available_immediately': False}
+            'available_immediately': False,
+            'matching_alg' : "2"}
         
 
         minEucDist = distance(tempDriverAloc.loc, passenger.sloc)
@@ -142,7 +144,8 @@ class NotUber:
             'driver_obj' : tempDriverAloc,
             'passenger_id': passenger.name,
             'passenger_obj': passenger,
-            'available_immediately': True}
+            'available_immediately': True,
+            'matching_alg' : "2"}
     
 
     def match3_inefficient(self):
@@ -162,7 +165,8 @@ class NotUber:
             'driver_obj' : tempDriverAloc,
             'passenger_id': passenger.name,
             'passenger_obj': passenger,
-            'available_immediately': False}
+            'available_immediately': False,
+            'matching_alg' : "3 inefficient"}
         
 
         minTravelTime = closestNodesDijkstra(tempDriverAloc.loc, passenger.sloc, passenger.startTime)
@@ -206,7 +210,8 @@ class NotUber:
             'driver_obj' : tempDriverAloc,
             'passenger_id': passenger.name,
             'passenger_obj': passenger,
-            'available_immediately': True}
+            'available_immediately': True,
+            'matching_alg' : "3 inefficient"}
     
     def match3_efficient(self):
 
@@ -225,7 +230,8 @@ class NotUber:
             'driver_obj' : tempDriverAloc,
             'passenger_id': passenger.name,
             'passenger_obj': passenger,
-            'available_immediately': False}
+            'available_immediately': False,
+            'matching_alg' : "3 efficient"}
         
 
         driverCache = []
@@ -274,7 +280,8 @@ class NotUber:
             'driver_obj' : tempDriverAloc,
             'passenger_id': passenger.name,
             'passenger_obj': passenger,
-            'available_immediately': True}
+            'available_immediately': True,
+            'matching_alg' : "3 efficient"}
 
     def match4():
         class Node:
@@ -339,8 +346,57 @@ class NotUber:
                 return []
 
     
-    def match5():
-        pass
+    def match5(self, max_distance=5.0, verbose=False):
+        if not self.available_drivers or len(self.unmatched_passengers) < 2:
+            return None
+
+        passenger1 = heapq.heappop(self.unmatched_passengers)
+        passenger2 = heapq.heappop(self.unmatched_passengers)
+
+        # Check if the two passengers are within a set distance of each other
+        distance_between_passengers = distance(passenger1.sloc, passenger2.sloc)
+        if distance_between_passengers <= max_distance:
+            # Try to find a driver who can serve both passengers
+            tempDriverAloc = heapq.heappop(self.available_drivers)
+
+            minEucDist = distance(tempDriverAloc.loc, passenger1.sloc) + distance(tempDriverAloc.loc, passenger2.sloc)
+
+            # Check if the driver can serve both passengers within a set distance
+            if minEucDist <= max_distance:
+                if not NotUber.isAvailable(tempDriverAloc, passenger1):
+                    print("First Element")
+                    return {
+                        'driver_id': tempDriverAloc.name,
+                        'driver_obj': tempDriverAloc,
+                        'passenger_id': [passenger1.name, passenger2.name],
+                        'passenger_obj': [passenger1, passenger2],
+                        'available_immediately': False,
+                        'matching_alg' : "5"
+                    }
+                # # Update driver location and time based on serving both passengers
+                # recycled_driver = tempDriverAloc
+                # recycled_driver.time_available = max(passenger1.startTime, passenger2.startTime) + datetime.timedelta(
+                #     hours=minEucDist)
+                # recycled_driver.loc = passenger2.dloc
+                # profit = (distance(tempDriverAloc.loc, passenger2.dloc) * 60) - (minEucDist * 60)
+                # profit_list.append(profit)
+                # passengers_waiting_list.append(minEucDist * 60)
+
+                print("Driver available for both passengers")
+                return {
+                    'driver_id': tempDriverAloc.name,
+                    'driver_obj': tempDriverAloc,
+                    'passenger_id': [passenger1.name, passenger2.name],
+                    'passenger_obj': [passenger1, passenger2],
+                    'available_immediately': True,
+                    'matching_alg' : "5"
+                }
+            
+
+        # If the passengers are not within the set distance, match each passenger with the closest available driver individually
+        heapq.heappush(passenger1)
+        heapq.heappush(passenger2)
+        return self.match2()
     
 
 
