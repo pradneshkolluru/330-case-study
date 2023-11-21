@@ -359,24 +359,20 @@ class NotUber:
             # Try to find a driver who can serve both passengers
             tempDriverAloc = heapq.heappop(self.available_drivers)
 
-            if not NotUber.isAvailable(tempDriverAloc, passenger1) or not NotUber.isAvailable(tempDriverAloc, passenger2):
-                print("First Element")
-                # Return both passengers unmatched if the selected driver is not available for both
-                heapq.heappush(self.unmatched_passengers, passenger1)
-                heapq.heappush(self.unmatched_passengers, passenger2)
-                return {
-                    'driver_id': tempDriverAloc.name,
-                    'driver_obj': tempDriverAloc,
-                    'passenger_id': [passenger1.name, passenger2.name],
-                    'passenger_obj': [passenger1, passenger2],
-                    'matched_both': False,
-                    'matching_alg' : "5"
-                }
-
             minEucDist = distance(tempDriverAloc.loc, passenger1.sloc) + distance(tempDriverAloc.loc, passenger2.sloc)
 
             # Check if the driver can serve both passengers within a set distance
             if minEucDist <= max_distance:
+                if not NotUber.isAvailable(tempDriverAloc, passenger1):
+                    print("First Element")
+                    return {
+                        'driver_id': tempDriverAloc.name,
+                        'driver_obj': tempDriverAloc,
+                        'passenger_id': [passenger1.name, passenger2.name],
+                        'passenger_obj': [passenger1, passenger2],
+                        'available_immediately': False,
+                        'matching_alg' : "5"
+                    }
                 # # Update driver location and time based on serving both passengers
                 # recycled_driver = tempDriverAloc
                 # recycled_driver.time_available = max(passenger1.startTime, passenger2.startTime) + datetime.timedelta(
@@ -392,22 +388,15 @@ class NotUber:
                     'driver_obj': tempDriverAloc,
                     'passenger_id': [passenger1.name, passenger2.name],
                     'passenger_obj': [passenger1, passenger2],
-                    'matched_both': True,
+                    'available_immediately': True,
                     'matching_alg' : "5"
                 }
             
 
         # If the passengers are not within the set distance, match each passenger with the closest available driver individually
+        heapq.heappush(passenger1)
+        heapq.heappush(passenger2)
         return self.match2()
-
-        # Return results for each passenger
-        return {
-            'driver_id': tempDriverAloc1,
-            'driver_obj': tempDriverAloc1,
-            'passenger_id': passenger1.name,
-            'passenger_obj': passenger1,
-            'matched_both': False
-        }
     
 
 

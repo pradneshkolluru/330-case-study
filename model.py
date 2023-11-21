@@ -73,15 +73,16 @@ def execModel(verbose = True):
                   print(f"{progress}% Completed")
 
 
-                  # if progress > 2:
+                  if progress > 2:
 
-                  #       break
+                        break
 
                   # if progress > 1.0:
                   #       break
             recycled_driver = match['driver_obj']
 
             if (match['matching_alg'] == "5"):
+                  print(match)
                   t1 = closestNodesDijkstra(match['passenger_obj'][0].sloc, match['driver_obj'].loc, match['passenger_obj'][1].startTime)
                   t2a = closestNodesDijkstra(match['passenger_obj'][0].sloc, match['passenger_obj'][1].sloc, match['passenger_obj'][0].startTime)
                   t2b = closestNodesDijkstra(match['passenger_obj'][1].sloc, match['passenger_obj'][0].dloc, match['passenger_obj'][1].startTime)
