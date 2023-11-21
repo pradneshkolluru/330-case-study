@@ -9,7 +9,7 @@ class driver:
         
         self.name = name
         self.loc = (lat, long)
-        self.time_available = datetime.datetime.strptime(time_available, "%m/%d/%Y %H:%M:%S")
+        self.time_available = datetime.datetime.strptime(time_available, "%m/%d/%Y %H:%M:%S") - datetime.timedelta(days=1)
     
     def __eq__(self, other):
         if isinstance(other, type(self)):
