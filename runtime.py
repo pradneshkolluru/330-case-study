@@ -61,7 +61,7 @@ def create_test_data(n, m):
 
 
 
-testValues = [0, 2, 5, 10, 20, 40, 80, 160, 320, 490, 500]
+testValues = [0, 2, 5, 10, 20, 40, 80, 160, 320, 500]
 
 driverct = np.zeros(len(testValues))
 passengerct = np.zeros(len(testValues))
