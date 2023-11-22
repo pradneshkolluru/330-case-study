@@ -285,65 +285,156 @@ class NotUber:
 
     def match4():
         class Node:
-            def __init__(self, row, col):
-                self.row = row
-                self.col = col
-                self.g = 0
-                self.h = 0
+            def __init__(self, id, cost):
+                self.id = id
+                self.cost = cost
+                self.g = float('inf')  # Distance from start node
+                self.h = 0  # Heuristic estimate to goal node
                 self.parent = None
 
             def __lt__(self, other):
                 return (self.g + self.h) < (other.g + other.h)
+            
+        class KdNode:
+            def __init__(self, point, left=None, right=None):
+                self.point = point
+                self.left = left
+                self.right = right
+
+        def build_kd_tree(points, depth=0):
+            if len(points) == 0:
+                return None
+
+            axis = depth % 2 #alternates between 0 and 1
+            #each level of the tree should be sorted by lon then lat alternating
+            points_sorted = sorted(points, key=lambda x: x[axis]) #sorts based on alternating axes
+            mid = len(points_sorted) // 2
+
+            return KdNode(
+                point=points_sorted[mid],
+                left=build_kd_tree(points_sorted[:mid], depth + 1),
+                right=build_kd_tree(points_sorted[mid + 1:], depth + 1)
+            )
+
+        def find_nearest_neighbor(node, target, depth=0):
+            if node is None:
+                return None
+
+            k = len(target)
+            axis = depth % k
+
+            next_branch = None
+            opposite_branch = None
+
+            if target[axis] < node.point[axis]:
+                next_branch = node.left
+            else:
+                next_branch = node.right
+
+            next_depth = depth + 1 if next_branch == node.left else depth
+            next_best = find_nearest_neighbor(next_branch, target, next_depth)
+
+            best = node.point
+            best_distance = distance(target, node.point)
+
+            if next_best is not None:
+                next_best_distance = distance(target, next_best)
+                if next_best_distance < best_distance:
+                    best = next_best
+                    best_distance = next_best_distance
+
+            if abs(target[axis] - node.point[axis]) < best_distance:
+                opposite_branch = node.right if next_branch == node.left else node.left
+                opposite_best = find_nearest_neighbor(opposite_branch, target, depth + 1)
+
+                if opposite_best is not None:
+                    opposite_best_distance = distance(target, opposite_best)
+                    if opposite_best_distance < best_distance:
+                        best = opposite_best
+
+            return best
+
+        def distance(location1, location2):
+
+            from math import sin, cos, sqrt, atan2, radians
+
+            R = 6373.0
+            
+            #longitude is hosted in index 0, latitude is in index 1
+            lat1 = radians(location1[1])
+            lon1 = radians(location1[0])
+            lat2 = radians(location2[1])
+            lon2 = radians(location2[0])
+
+            dlon = lon2 - lon1
+            dlat = lat2 - lat1
+
+            a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+            c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+            distance = R * c
+            # distance = abs(dlon) + abs(dlat)
+            # distance = ((dlon) ** 2 + (dlat ** 2)) ** 0.5
+            return distance
+
+        def read_coordinates():
+            import json
+
+            with open("data/node_data.csv", 'r') as file:
+                data = json.load(file)
+            return data
+
+        coordinates_data = read_coordinates()
+
+        # print(coordinates_data)
+
+        input_lon = -73.935242
+        input_lat = 40.655865
+
+        # converting to list so i can use 0, 1 values
+        coordinates_list = [list(coord.values()) for coord in coordinates_data.values()]
+
+        kd_tree = build_kd_tree(coordinates_list)
+        nearest_neighbor = find_nearest_neighbor(kd_tree, [input_lon, input_lat])
+
+        print(f"The key with coordinates closest to ({input_lon}, {input_lat}) is: {nearest_neighbor}")
 
         def heuristic(node, goal):
-            return abs(node.row - goal.row) + abs(node.col - goal.col)
+            return abs(node.cost - goal.cost)
 
-        def astar(grid, start, goal):
-            if not (0 <= start[0] < len(grid) and 0 <= start[1] < len(grid[0]) and
-                0 <= goal[0] < len(grid) and 0 <= goal[1] < len(grid[0])):
-                    return []
+
+        def astar(graph, start_id, goal_id):
+            start_node = Node(start_id, graph[start_id].cost)
+            goal_node = Node(goal_id, graph[goal_id].cost)
 
             open_set = []
             closed_set = set()
-
-            start_node = Node(start[0], start[1])
-            goal_node = Node(goal[0], goal[1])
 
             heapq.heappush(open_set, start_node)
 
             while open_set:
                 current_node = heapq.heappop(open_set)
 
-                if current_node.row == goal_node.row and current_node.col == goal_node.col:
+                if current_node.id == goal_node.id:
                     path = []
                     while current_node:
-                        path.append((current_node.row, current_node.col))
+                        path.append((current_node.id, current_node.cost))
                         current_node = current_node.parent
                     return path[::-1]
 
-                closed_set.add((current_node.row, current_node.col))
+                closed_set.add(current_node.id)
 
-                neighbors = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # Adjust for diagonal movement if needed
-
-                for n in neighbors:
-                    new_row, new_col = current_node.row + n[0], current_node.col + n[1]
-
-                    if (
-                        0 <= new_row < len(grid) and
-                        0 <= new_col < len(grid[0]) and
-                        grid[new_row][new_col] != 1 and
-                        (new_row, new_col) not in closed_set
-                    ):
-                        
-                        neighbor = Node(new_row, new_col)
-                        neighbor.g = current_node.g + 1
+                for neighbor_id, edge_cost in graph[current_node.id].neighbors.items():
+                    if neighbor_id not in closed_set:
+                        neighbor = Node(neighbor_id, edge_cost)
+                        neighbor.g = current_node.g + edge_cost
                         neighbor.h = heuristic(neighbor, goal_node)
                         neighbor.parent = current_node
 
                         if neighbor not in open_set:
                             heapq.heappush(open_set, neighbor)
 
-                return []
+            return None  # No path found
 
     
     def match5(self, max_distance=5.0, verbose=False):
